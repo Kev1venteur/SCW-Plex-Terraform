@@ -32,10 +32,10 @@ resource "scaleway_k8s_cluster" "plex_cluster" {
   }
 }
 
-resource "scaleway_k8s_pool" "plxe" {
+resource "scaleway_k8s_pool" "plex_pool" {
   cluster_id  = scaleway_k8s_cluster.plex_cluster.id
   name        = "plex_pool"
-  node_type   = "GP1-XS"
+  node_type   = "GP1-XS" #RENDER-S for GPUs
   size        = 3
   autoscaling = true
   autohealing = true
@@ -43,11 +43,38 @@ resource "scaleway_k8s_pool" "plxe" {
   max_size    = 5
 }
 
-resource "local_file" "kubeconfig" {
-  content = scaleway_k8s_cluster.plex_cluster.kubeconfig[0].config_file
-  filename = "${path.module}/kubeconfig"
+output "cluster_url" { #To get plex URL
+  value = scaleway_k8s_cluster.plex_cluster.apiserver_url
 }
 
-output "cluster_url" {
-  value = scaleway_k8s_cluster.plex_cluster.apiserver_url
+resource "null_resource" "kubeconfig" {
+  depends_on = [scaleway_k8s_pool.plex_pool]
+  triggers = {
+    host                   = scaleway_k8s_cluster.plex_cluster.kubeconfig[0].host
+    token                  = scaleway_k8s_cluster.plex_cluster.kubeconfig[0].token
+    cluster_ca_certificate = scaleway_k8s_cluster.plex_cluster.kubeconfig[0].cluster_ca_certificate
+  }
+}
+
+provider "helm" {
+  kubernetes {
+    config_path = "${path.module}/kubeconfig-plex_cluster.yaml"
+    host  = null_resource.kubeconfig.triggers.host
+    token = null_resource.kubeconfig.triggers.token
+    cluster_ca_certificate = base64decode(
+    null_resource.kubeconfig.triggers.cluster_ca_certificate
+    )
+  }
+}
+
+resource "helm_release" "nginx_ingress" {
+  name       = "nginx-ingress-controller"
+
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "nginx-ingress-controller"
+
+  set {
+    name  = "service.type"
+    value = "ClusterIP"
+  }
 }
