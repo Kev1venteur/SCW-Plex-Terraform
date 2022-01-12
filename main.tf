@@ -43,10 +43,6 @@ resource "scaleway_k8s_pool" "plex_pool" {
   max_size    = 5
 }
 
-output "cluster_url" { #To get plex URL
-  value = scaleway_k8s_cluster.plex_cluster.apiserver_url
-}
-
 resource "null_resource" "kubeconfig" {
   depends_on = [scaleway_k8s_pool.plex_pool]
   triggers = {
@@ -87,6 +83,7 @@ resource "helm_release" "nginx_ingress" {
     name = "controller.config.use-proxy-protocol"
     value = "true"
   }
+ 
   set {
     name = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/scw-loadbalancer-proxy-protocol-v2"
     value = "true"
@@ -97,10 +94,26 @@ resource "helm_release" "nginx_ingress" {
     name = "controller.service.externalTrafficPolicy"
     value = "Local"
   }
+}
 
-  // enable this annotation to use cert-manager
-  //set {
-  //  name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/scw-loadbalancer-use-hostname"
-  //  value = "true"
-  //}
+resource "helm_release" "plex" {
+  name       = "plex"
+  repository = "https://k8s-at-home.com/charts/"
+  chart      = "plex"
+
+  set {
+    name  = "cluster.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "metrics.enabled"
+    value = "true"
+  }
+  
+  set {
+    name  = "service.annotations.prometheus\\.io/port"
+    value = "9127"
+    type  = "string"
+  }
 }
