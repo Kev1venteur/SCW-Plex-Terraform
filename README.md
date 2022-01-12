@@ -4,7 +4,7 @@
 ![alt text](annexes/images/Infra.png)
 
 ## Prérequis
-Installer la CLI Scaleway
+Installez la CLI Scaleway
 ```bash
 # Récupération de l'utilitaire
 sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.4.0/scw-2.4.0-linux-x86_64"
@@ -32,7 +32,7 @@ terraform destroy
 
 ## Debug
 
-#### Augmenter le niveau de log de Terraform
+#### Augmentez le niveau de log de Terraform
 
 Avant de lancer Terraform définissez la variable d'environnement 'TF_LOG'.
 
