@@ -1,7 +1,7 @@
 # SCW-Plex-Terraform
 :key: Ce repo fournit le fichier Terraform pour déployer sur Scaleway l'infrastructure illustrée ci-dessous : 
 
-![alt text](annexes/images/Infra.png)
+![alt text](annexes/images/Infra.png?style=centerme)
 
 ## Prérequis
 Installez la CLI Scaleway
