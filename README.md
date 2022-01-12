@@ -19,14 +19,14 @@ scw init
 ## Kickstart
 
 ```BASH
-# Clonez repo
+# Pour commencer, clonez le repo
 git clone https://github.com/Kev1venteur/SCW-Plex-Terraform.git && cd SCW-Plex-Terraform
-
-# Lancez l'initialisation de Terraform
+#----------------------TERRAFORM-------------------------#
+# Lancez ensuite l'initialisation de Terraform
 terraform init
-# Vérifiez la sythaxe du fichier main
+# Vérifiez la syntaxe du fichier main
 terraform plan
-# Appliquez la conf chez Scaleway
+# Appliquez la configuration du fichier "main.tf" chez Scaleway
 terraform apply
 # (Optionnel) Détruisez ce que vous venez de créer
 terraform destroy
