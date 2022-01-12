@@ -12,7 +12,7 @@ Installez la CLI Scaleway
 sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.4.0/scw-2.4.0-linux-x86_64"
 # Ajout des droits d'éxécution
 sudo chmod +x /usr/local/bin/scw
-# Initialisation de la CLI (il faudra rentrer vos indentifiant Scaleway)
+# Initialisation de la CLI (il faudra rentrer vos indentifiants Scaleway)
 scw init
 ```
 
