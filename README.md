@@ -37,8 +37,10 @@ terraform destroy
 Vous allez éxécuter des commandes kubectl, et devez donc avoir l'outil installé. <br />
 Vous pouvez retrouver un tuto [ici](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
 ```BASH
-# Pour voir les Resultats de ce que vous venez de créer, copiez le fichier "kubeconfig"
-# que terraform vient de récupérer vers "~/.kube/config" puis executez :
+# Pour voir les Resultats de ce que vous venez de créer, placer vous à la racine du repo.
+# Copiez le fichier "kubeconfig" que terraform vient de récupérer vers "~/.kube/config" :
+cp kubeconfig ~/.kube/config
+# Admirez :
 kubectl get svc --all-namespaces
 ```
 
