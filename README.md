@@ -47,6 +47,12 @@ Vous devriez avoir quelque chose comme cela :
 <p align="center">
   <img src="annexes/images/svc-results.png?style=centerme">
 </p>
+Vous pouvez observer qu'il n'y a qu'une instance plex.<br />
+C'est normal notre cluster est scalable, il se créer avec 3 instances,<br />
+peut monter à 5 en charge et ne garder qu'une istance s'il n'y a aucune activité.<br /><br />
+
+A savoir que les instances créées sont sans GPU pour faire des économies.<br />
+Il est toutefois possible de modifier ce paramètre [ici](main.tf#L46).
 
 ## Debug
 
