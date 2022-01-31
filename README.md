@@ -30,7 +30,17 @@ terraform plan
 terraform apply
 # (Optionnel) Détruisez ce que vous venez de créer
 terraform destroy
-``` 
+```
+
+## Results
+
+Vous allez éxécuter des commandes kubectl, et devez donc avoir l'outil installé. <br />
+Vous pouvez retrouver un tuto [ici](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
+```BASH
+# Pour voir les Resultats de ce que vous venez de créer, copiez le fichier "kubeconfig"
+# que terraform vient de récupérer vers "~/.kube/config" puis executez :
+kubectl get svc --all-namespaces
+```
 
 ## Debug
 
