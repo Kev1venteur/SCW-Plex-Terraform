@@ -17,10 +17,18 @@ resource "scaleway_instance_ip" "public_ip" {
 
 resource "scaleway_k8s_cluster" "plex_cluster" {
   name             = "plex_cluster"
-  description      = "Cluster for Plex TP-2"
-  version          = "1.23.0"
-  cni              = "cilium"
+  description      = "Cluster for Plex TP-3."
+  version          = "1.23"
+  cni              = "flannel" # More mature and stable than Calico, Weave and Cilium
+  #ingress	   = "nginx" # There is a bug that appear to have deleted the ingress argument
+  # See https://github.com/hashicorp/terraform/issues/28986
 
+  auto_upgrade {
+    enable				= true
+    maintenance_window_start_hour       = 3
+    maintenance_window_day              = "any"
+  }
+  
   autoscaler_config {
     disable_scale_down              = false
     scale_down_delay_after_add      = "5m"
@@ -35,7 +43,7 @@ resource "scaleway_k8s_cluster" "plex_cluster" {
 resource "scaleway_k8s_pool" "plex_pool" {
   cluster_id  = scaleway_k8s_cluster.plex_cluster.id
   name        = "plex_pool"
-  node_type   = "GP1-XS" #RENDER-S for GPUs
+  node_type   = "GP1-XS" #Change to RENDER-S for GPUs instances - but will cost more
   size        = 3
   autoscaling = true
   autohealing = true
@@ -52,13 +60,13 @@ resource "null_resource" "kubeconfig" {
   }
 }
 
+# Use of Helm to deploy services inside the cluster in one step
 provider "helm" {
   kubernetes {
-    config_path = "${path.module}/kubeconfig-plex_cluster.yaml"
     host  = null_resource.kubeconfig.triggers.host
     token = null_resource.kubeconfig.triggers.token
     cluster_ca_certificate = base64decode(
-    null_resource.kubeconfig.triggers.cluster_ca_certificate
+      null_resource.kubeconfig.triggers.cluster_ca_certificate
     )
   }
 }
@@ -66,6 +74,7 @@ provider "helm" {
 resource "scaleway_lb_ip" "nginx_ip" {
 }
 
+# Deploying nginx load-balancer via Helm
 resource "helm_release" "nginx_ingress" {
   name      = "nginx-ingress"
   namespace = "kube-system"
@@ -78,7 +87,7 @@ resource "helm_release" "nginx_ingress" {
     value = scaleway_lb_ip.nginx_ip.ip_address
   }
 
-  // enable proxy protocol to get client ip addr instead of loadbalancer one
+  # Proxy protocol to get client ip addr instead of loadbalancer one
   set {
     name = "controller.config.use-proxy-protocol"
     value = "true"
@@ -89,13 +98,20 @@ resource "helm_release" "nginx_ingress" {
     value = "true"
   }
 
-  // enable to avoid node forwarding
+  # Avoid node ip forwarding
   set {
     name = "controller.service.externalTrafficPolicy"
     value = "Local"
   }
+  
+  # Cert manager to get signed let's encrypt certificate
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/scw-loadbalancer-use-hostname"
+    value = "true"
+  }
 }
 
+# Deploy Plex via Helm from k8s@home artifactory
 resource "helm_release" "plex" {
   name       = "plex"
   repository = "https://k8s-at-home.com/charts/"
@@ -111,9 +127,24 @@ resource "helm_release" "plex" {
     value = "true"
   }
   
-  set {
+  set { #Enable plex metrics monitoring for prometeus
     name  = "service.annotations.prometheus\\.io/port"
     value = "9127"
     type  = "string"
   }
+}
+
+# Récupération du fichier kubeconfig
+resource "local_file" "kubeconfig" {
+  content = scaleway_k8s_cluster.plex_cluster.kubeconfig[0].config_file
+  filename = "${path.module}/kubeconfig"
+}
+
+# Output infos
+output "cluster_url" {
+  value = scaleway_k8s_cluster.plex_cluster.apiserver_url
+}
+
+output "public_loadbalancer_ip" {
+  value = scaleway_lb_ip.nginx_ip.ip_address
 }
