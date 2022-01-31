@@ -32,7 +32,7 @@ terraform apply
 terraform destroy
 ```
 
-## Results
+## Resultats
 
 Vous allez exécuter des commandes kubectl, et devez donc avoir l'outil installé. <br />
 Vous pouvez retrouver un tuto [ici](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
