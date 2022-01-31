@@ -43,6 +43,10 @@ cp kubeconfig ~/.kube/config
 # Admirez :
 kubectl get svc --all-namespaces
 ```
+Vous devriez avoir quelque chose comme cela :
+<p align="center">
+  <img src="annexes/images/svc-results.png?style=centerme">
+</p>
 
 ## Debug
 
