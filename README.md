@@ -5,6 +5,9 @@
   <img src="annexes/images/Infra.png?style=centerme">
 </p>
 
+:information_source: les instances créées sont sans GPU pour faire des économies.<br />
+Il est toutefois possible de modifier ce paramètre [ici](main.tf#L46).
+
 ## Prérequis
 Installez la CLI Scaleway
 ```bash
@@ -49,10 +52,19 @@ Vous devriez avoir quelque chose comme cela :
 </p>
 Vous pouvez observer qu'il n'y a qu'une instance plex.<br />
 C'est normal notre cluster est scalable, il se créer avec 3 instances,<br />
-peut monter à 5 en charge et ne garder qu'une istance s'il n'y a aucune activité.<br /><br />
+peut monter à 5 en charge et ne garder qu'une instance s'il n'y a aucune activité.<br /><br />
 
-A savoir que les instances créées sont sans GPU pour faire des économies.<br />
-Il est toutefois possible de modifier ce paramètre [ici](main.tf#L46).
+Si tout c'est bien passé et que vous tapez dans votre navigateur<br />
+l'adresse IP externe du load balancer, vous devriez voir l'accueil de Plex.<br />
+
+Cependant, il semble y avoir un souci avec la gestion de l'argument<br />
+de l'ingress controller situé [ici](main.tf#L23) par Scaleway en ce moment.
+
+Voici donc le résulat final (nginx n'arrive pas à contacter les instances Plex<br />
+car pas d'ingress controller sur le cluster Kapsule)
+<p align="center">
+  <img src="annexes/images/browser-result.png?style=centerme">
+</p>
 
 ## Debug
 
