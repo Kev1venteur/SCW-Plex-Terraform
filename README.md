@@ -57,15 +57,6 @@ peut monter à 5 en charge et ne garder qu'une instance s'il n'y a aucune activi
 Si tout c'est bien passé et que vous tapez dans votre navigateur<br />
 l'adresse IP externe du load balancer, vous devriez voir l'accueil de Plex.<br />
 
-Cependant, il semble y avoir un souci avec la gestion de l'argument<br />
-de l'ingress controller situé [ici](main.tf#L23) par Scaleway en ce moment.
-
-Voici donc le résulat final :
-<p align="center">
-  <img src="annexes/images/browser-result.png?style=centerme">
-</p>
-(nginx n'arrive pas à contacter les instances Plex car pas d'ingress controller sur le cluster Kapsule)
-
 ## Debug
 
 #### Augmentez le niveau de log de Terraform
